@@ -1,0 +1,71 @@
+# 视频所有格式
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.flv
+*.wmv
+*.rmvb
+*.webm
+*.ts
+*.m4v
+*.mpeg
+*.mpg
+
+# 图片所有格式
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.webp
+*.ico
+*.svg
+
+# 音频
+*.mp3
+*.wav
+*.flac
+*.ogg
+*.m4a
+
+# 压缩包
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
+# 日志、临时文件
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# Python缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 文件夹直接忽略
+output/
+out/
+video/
+videos/
+img/
+image/
+temp/
+cache/
+result/
+save/
+run/
+data/
+files/
+
+# 系统垃圾
+.DS_Store
+Thumbs.db
