@@ -45,27 +45,34 @@
 *.swp
 *.swo
 
-# Python缓存
+# Python 缓存
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# 文件夹直接忽略
+# 输出与结果文件夹
 output/
 out/
+result/
+run/
+save/
+temp/
+cache/
+data/
+files/
 video/
 videos/
 img/
 image/
-temp/
-cache/
-result/
-save/
-run/
-data/
-files/
 
 # 系统垃圾
 .DS_Store
 Thumbs.db
+
+# AI 模型文件（核心！）
+*.pt
+*.pth
+*.onnx
+*.bin
+*.engine
