@@ -5,47 +5,38 @@ from ultralytics import YOLO
 def load_bar_model(model_path):
     return YOLO(model_path)
 
-def detect_bar_and_pose(model, frame, conf=0.6):
-    results = model(frame, conf=conf, verbose=False)[0]
+def detect_bar_and_pose(model, frame, conf=0.5):
+    results = model(frame, conf=conf, verbose=False)
     bar_info = None
-    bar_kpts = None
+    pose_kpts = None
+    for r in results:
+        if r.boxes is not None:
+            for box in r.boxes:
+                cls = int(box.cls[0])
+                if cls == 0:
+                    x1, y1, x2, y2 = map(int, box.xyxy[0])
+                    bar_info = {
+                        "x1": x1, "y1": y1, "x2": x2, "y2": y2,
+                        "bar_y": (y1 + y2) / 2
+                    }
+        if r.keypoints is not None and len(r.keypoints.xy) > 0:
+            pose_kpts = r.keypoints.xy[0].cpu().numpy()
+    return bar_info, pose_kpts
 
-    if results.boxes is not None and len(results.boxes) > 0:
-        boxes = results.boxes.xyxy.cpu().numpy()
-        cls = results.boxes.cls.cpu().numpy()
-        bar_boxes = boxes[cls == 0]
-        if len(bar_boxes) > 0:
-            idx = np.argmin(bar_boxes[:, 1])
-            x1, y1, x2, y2 = bar_boxes[idx]
-            bar_y = (y1 + y2) / 2
-            bar_info = {
-                "box": (int(x1), int(y1), int(x2), int(y2)),
-                "bar_y": bar_y
-            }
-
-    if results.keypoints is not None and len(results.keypoints.xy) > 0:
-        bar_kpts = results.keypoints.xy[0].cpu().numpy()
-
-    return bar_info, bar_kpts
-
-def draw_bar(frame, bar_info, color=(0,255,255)):
+def draw_bar(frame, bar_info, color=(0,0,255)):
     if bar_info is None:
         return frame
-    x1, y1, x2, y2 = bar_info["box"]
-    cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-    cv2.line(frame, (0, int(bar_info["bar_y"])),
-             (frame.shape[1], int(bar_info["bar_y"])), color, 1)
+    x1 = bar_info["x1"]
+    y1 = bar_info["y1"]
+    x2 = bar_info["x2"]
+    y2 = bar_info["y2"]
+    cv2.rectangle(frame, (x1, y1), (x2, y2), color, 3)
     return frame
 
-def draw_bar_pose(frame, bar_kpts, color=(255,0,255)):
-    if bar_kpts is None:
+def draw_bar_pose(frame, kpts):
+    if kpts is None:
         return frame
-    for x, y in bar_kpts:
-        if x > 5 and y > 5:
-            cv2.circle(frame, (int(x), int(y)), 3, color, -1)
-    pairs = [(5,6),(5,11),(6,12),(11,12),(5,7),(7,9),(6,8),(8,10),(11,13),(13,15),(12,14),(14,16)]
-    for i,j in pairs:
-        if bar_kpts[i][1]>1 and bar_kpts[j][1]>1:
-            cv2.line(frame, (int(bar_kpts[i][0]),int(bar_kpts[i][1])),
-                     (int(bar_kpts[j][0]),int(bar_kpts[j][1])), color, 1)
+    for x, y in kpts:
+        if x > 0 and y > 0:
+            cv2.circle(frame, (int(x), int(y)), 3, (0, 255, 255), -1)
     return frame
